@@ -39,6 +39,11 @@ private:
 	ShadowMap* shadowMap;
 
 	XMFLOAT3 cubePosition;
+	XMFLOAT3 lightPosition;
+	XMFLOAT3 lightDirection;
+	SphereMesh* lightSphereMesh;
+
+	bool viewFromLight;
 };
 
 #endif

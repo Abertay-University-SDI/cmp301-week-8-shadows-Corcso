@@ -23,8 +23,8 @@ void App1::init(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeigh
 	shadowShader = new ShadowShader(renderer->getDevice(), hwnd);
 
 	// Variables for defining shadow map
-	int shadowmapWidth = 1024;
-	int shadowmapHeight = 1024;
+	int shadowmapWidth = 4096;
+	int shadowmapHeight = 4096;
 	int sceneWidth = 100;
 	int sceneHeight = 100;
 
@@ -122,34 +122,34 @@ void App1::finalPass()
 	renderer->beginScene(0.39f, 0.58f, 0.92f, 1.0f);
 	camera->update();
 
-	//// get the world, view, projection, and ortho matrices from the camera and Direct3D objects.
-	//XMMATRIX worldMatrix = renderer->getWorldMatrix();
-	//XMMATRIX viewMatrix = camera->getViewMatrix();
-	//XMMATRIX projectionMatrix = renderer->getProjectionMatrix();
+	// get the world, view, projection, and ortho matrices from the camera and Direct3D objects.
+	XMMATRIX worldMatrix = renderer->getWorldMatrix();
+	XMMATRIX viewMatrix = camera->getViewMatrix();
+	XMMATRIX projectionMatrix = renderer->getProjectionMatrix();
 
-	//worldMatrix = XMMatrixTranslation(-50.f, 0.f, -10.f);
-	//// Render floor
-	//mesh->sendData(renderer->getDeviceContext());
-	//shadowShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, 
-	//	textureMgr->getTexture(L"brick"), shadowMap->getDepthMapSRV(), light);
-	//shadowShader->render(renderer->getDeviceContext(), mesh->getIndexCount());
+	worldMatrix = XMMatrixTranslation(-50.f, 0.f, -10.f);
+	// Render floor
+	mesh->sendData(renderer->getDeviceContext());
+	shadowShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, 
+		textureMgr->getTexture(L"brick"), shadowMap->getDepthMapSRV(), light);
+	shadowShader->render(renderer->getDeviceContext(), mesh->getIndexCount());
 
-	//// Render model
-	//worldMatrix = renderer->getWorldMatrix();
-	//worldMatrix = XMMatrixTranslation(0.f, 7.f, 5.f);
-	//XMMATRIX scaleMatrix = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-	//worldMatrix = XMMatrixMultiply(worldMatrix, scaleMatrix);
-	//model->sendData(renderer->getDeviceContext());
-	//shadowShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"), shadowMap->getDepthMapSRV(), light);
-	//shadowShader->render(renderer->getDeviceContext(), model->getIndexCount());
+	// Render model
+	worldMatrix = renderer->getWorldMatrix();
+	worldMatrix = XMMatrixTranslation(0.f, 7.f, 5.f);
+	XMMATRIX scaleMatrix = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+	worldMatrix = XMMatrixMultiply(worldMatrix, scaleMatrix);
+	model->sendData(renderer->getDeviceContext());
+	shadowShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, textureMgr->getTexture(L"brick"), shadowMap->getDepthMapSRV(), light);
+	shadowShader->render(renderer->getDeviceContext(), model->getIndexCount());
 	
-	XMMATRIX worldMatrix = XMMatrixIdentity();
-	XMMATRIX viewMatrix = camera->getOrthoViewMatrix();
-	XMMATRIX projectionMatrix = renderer->getOrthoMatrix();
+	//XMMATRIX worldMatrix = XMMatrixIdentity();
+	//XMMATRIX viewMatrix = camera->getOrthoViewMatrix();
+	//XMMATRIX projectionMatrix = renderer->getOrthoMatrix();
 
-	orthoMesh->sendData(renderer->getDeviceContext());
-	textureShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, shadowMap->getDepthMapSRV());
-	textureShader->render(renderer->getDeviceContext(), orthoMesh->getIndexCount());
+	//orthoMesh->sendData(renderer->getDeviceContext());
+	//textureShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, shadowMap->getDepthMapSRV());
+	//textureShader->render(renderer->getDeviceContext(), orthoMesh->getIndexCount());
 
 	gui();
 	renderer->endScene();

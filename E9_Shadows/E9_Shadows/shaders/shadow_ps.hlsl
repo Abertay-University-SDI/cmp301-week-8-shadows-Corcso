@@ -1,23 +1,31 @@
 
 Texture2D shaderTexture : register(t0);
-Texture2D depthMapTexture : register(t1);
+Texture2D depthMapTexture[8] : register(t1);
 
 SamplerState diffuseSampler  : register(s0);
 SamplerState shadowSampler : register(s1);
 
+struct Light
+{
+    float4 ambient;
+    float4 diffuse;
+    float4 direction;
+    matrix lightViewMatrix;
+    matrix lightProjectionMatrix;
+};
+
 cbuffer LightBuffer : register(b0)
 {
-	float4 ambient;
-	float4 diffuse;
-	float3 direction;
+    Light lights[8];
+    int lightCount;
 };
 
 struct InputType
 {
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD0;
-	float3 normal : NORMAL;
-    float4 lightViewPos : TEXCOORD1;
+    float3 normal : NORMAL;
+    float4 worldPosition : POSITION;
 };
 
 // Calculate lighting intensity based on direction and normal. Combine with light colour.
@@ -68,21 +76,26 @@ float4 main(InputType input) : SV_TARGET
     float shadowMapBias = 0.001f;
     float4 colour = float4(0.f, 0.f, 0.f, 1.f);
     float4 textureColour = shaderTexture.Sample(diffuseSampler, input.tex);
-
-	// Calculate the projected texture coordinates.
-    float2 pTexCoord = getProjectiveCoords(input.lightViewPos);
-	
-    // Shadow test. Is or isn't in shadow
-    if (hasDepthData(pTexCoord))
-    {
-        // Has depth map data
-        if (!isInShadow(depthMapTexture, pTexCoord, input.lightViewPos, shadowMapBias))
-        {
-            // is NOT in shadow, therefore light
-            colour = calculateLighting(-direction, input.normal, diffuse);
-        }
-    }
     
-    colour = saturate(colour + ambient);
+    for (int i = 0; i < lightCount; ++i)
+    {
+        float4 lightViewPosition = mul(mul(input.worldPosition, lights[i].lightViewMatrix), lights[i].lightProjectionMatrix);
+    
+	    // Calculate the projected texture coordinates.
+        float2 pTexCoord = getProjectiveCoords(lightViewPosition);
+	
+        // Shadow test. Is or isn't in shadow
+        if (hasDepthData(pTexCoord))
+        {
+            // Has depth map data
+            if (!isInShadow(depthMapTexture[i], pTexCoord, lightViewPosition, shadowMapBias))
+            {
+                // is NOT in shadow, therefore light
+                colour += calculateLighting(-lights[i].direction.xyz, input.normal, lights[i].diffuse);
+            }
+        }
+    
+        colour += lights[i].ambient;
+    }
     return saturate(colour) * textureColour;
 }

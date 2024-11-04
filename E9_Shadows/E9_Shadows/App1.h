@@ -20,7 +20,7 @@ public:
 
 protected:
 	bool render();
-	void depthPass();
+	void depthPass(int i);
 	void finalPass();
 	void gui();
 
@@ -29,14 +29,14 @@ private:
 	PlaneMesh* mesh;
 	CubeMesh* cube;
 
-	Light* light;
+	Light** lights;
 	AModel* model;
 	ShadowShader* shadowShader;
 	DepthShader* depthShader;
 	
 	OrthoMesh* orthoMesh;
 	
-	ShadowMap* shadowMap;
+	ShadowMap** shadowMaps;
 
 	XMFLOAT3 cubePosition;
 	XMFLOAT3 lightPosition;

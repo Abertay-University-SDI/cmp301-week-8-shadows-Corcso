@@ -27,13 +27,18 @@ protected:
 private:
 	TextureShader* textureShader;
 	PlaneMesh* mesh;
+	CubeMesh* cube;
 
 	Light* light;
 	AModel* model;
 	ShadowShader* shadowShader;
 	DepthShader* depthShader;
+	
 	OrthoMesh* orthoMesh;
+	
 	ShadowMap* shadowMap;
+
+	XMFLOAT3 cubePosition;
 };
 
 #endif
